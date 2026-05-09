@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import StorePage from './pages/StorePage'
 import BasketPage from './pages/BasketPage'
+import ProfilePage from './pages/ProfilePage'
 import ProtectedRoute from './auth/ProtectedRoute'
 import { useAuth } from './auth/AuthContext'
 
@@ -38,7 +39,7 @@ export default function App()
 
                     <Route path="/store" element={<ProtectedRoute roles={['client']}><StorePage /></ProtectedRoute>} />
                     <Route path="/basket" element={<ProtectedRoute roles={['client']}><BasketPage /></ProtectedRoute>} />
-                    <Route path="/profile" element={<ProtectedRoute roles={['client']}><Placeholder title="Profile" /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute roles={['client']}><ProfilePage /></ProtectedRoute>} />
 
                     <Route path="/admin/items" element={<ProtectedRoute roles={['power', 'master']}><Placeholder title="Admin: Items" /></ProtectedRoute>} />
                     <Route path="/admin/baskets" element={<ProtectedRoute roles={['power', 'master']}><Placeholder title="Admin: Baskets" /></ProtectedRoute>} />
