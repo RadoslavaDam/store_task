@@ -13,14 +13,27 @@ server.db = router.db
 server.use(jsonServer.defaults())
 server.use(jsonServer.bodyParser)
 
-// Decode the JWT payload without signature verification.
-// For a coursework demo this is sufficient. Production would share JWT_SECRET
-// with json-server-auth via env and use jwt.verify(token, secret) instead.
+// Decode the JWT payload without signature verification, then look up the
+// caller in the db to read their actual role. json-server-auth does not put
+// the role into the JWT claims, so we cannot trust the token alone for
+// authorization. The token only tells us WHICH user is calling; the role
+// comes from the db record.
+//
+// For a coursework demo, decoding without verifying the signature is fine.
+// Production would share JWT_SECRET with json-server-auth via env and use
+// jwt.verify(token, secret) instead.
 function decodeUser(req) {
     const header = req.headers.authorization || ''
     const token = header.startsWith('Bearer ') ? header.slice(7) : null
     if (!token) return null
-    try { return jwt.decode(token) } catch (_) { return null }
+    let decoded
+    try { decoded = jwt.decode(token) } catch (_) { return null }
+    if (!decoded) return null
+    const id = decoded.sub || decoded.id
+    if (id === undefined || id === null) return null
+    const dbUser = router.db.get('users').find({ id: parseInt(id, 10) }).value()
+    if (!dbUser) return null
+    return { id: dbUser.id, email: dbUser.email, role: dbUser.role || 'client' }
 }
 
 // Role-based guards. Runs before json-server-auth so we can reject early
