@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { checkMasterExists } from '../api/users'
 import styles from '../styles/forms.module.css'
 
 export default function RegisterPage()
@@ -10,6 +11,15 @@ export default function RegisterPage()
     const [form, setForm] = useState({ email: '', password: '', name: '', address: '', phone: '' })
     const [error, setError] = useState('')
     const [busy, setBusy] = useState(false)
+    const [hasMaster, setHasMaster] = useState(true)
+    const [checking, setChecking] = useState(true)
+
+    useEffect(() => {
+        checkMasterExists()
+            .then(setHasMaster)
+            .catch(() => setHasMaster(true))
+            .finally(() => setChecking(false))
+    }, [])
 
     function update(field) {
         return (e) => setForm(s => ({ ...s, [field]: e.target.value }))
@@ -20,7 +30,8 @@ export default function RegisterPage()
         setError('')
         setBusy(true)
         try {
-            await register({ ...form, role: 'client' })
+            const role = hasMaster ? 'client' : 'master'
+            await register({ ...form, role })
             navigate('/')
         } catch (err) {
             setError(err.message)
@@ -32,6 +43,11 @@ export default function RegisterPage()
     return (
         <div className={styles.formWrap}>
             <h1>Register</h1>
+            {!checking && !hasMaster && (
+                <div className={styles.notice}>
+                    No administrator exists yet. You will be registered as the master administrator.
+                </div>
+            )}
             <form onSubmit={onSubmit} className={styles.form}>
                 <label>
                     Email
