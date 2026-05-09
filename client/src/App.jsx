@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import StorePage from './pages/StorePage'
 import ProtectedRoute from './auth/ProtectedRoute'
 import { useAuth } from './auth/AuthContext'
 
@@ -34,7 +35,7 @@ export default function App()
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
 
-                    <Route path="/store" element={<ProtectedRoute roles={['client']}><Placeholder title="Store" /></ProtectedRoute>} />
+                    <Route path="/store" element={<ProtectedRoute roles={['client']}><StorePage /></ProtectedRoute>} />
                     <Route path="/basket" element={<ProtectedRoute roles={['client']}><Placeholder title="Basket" /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute roles={['client']}><Placeholder title="Profile" /></ProtectedRoute>} />
 
