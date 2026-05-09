@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import StorePage from './pages/StorePage'
+import BasketPage from './pages/BasketPage'
 import ProtectedRoute from './auth/ProtectedRoute'
 import { useAuth } from './auth/AuthContext'
 
@@ -36,7 +37,7 @@ export default function App()
                     <Route path="/register" element={<RegisterPage />} />
 
                     <Route path="/store" element={<ProtectedRoute roles={['client']}><StorePage /></ProtectedRoute>} />
-                    <Route path="/basket" element={<ProtectedRoute roles={['client']}><Placeholder title="Basket" /></ProtectedRoute>} />
+                    <Route path="/basket" element={<ProtectedRoute roles={['client']}><BasketPage /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute roles={['client']}><Placeholder title="Profile" /></ProtectedRoute>} />
 
                     <Route path="/admin/items" element={<ProtectedRoute roles={['power', 'master']}><Placeholder title="Admin: Items" /></ProtectedRoute>} />
