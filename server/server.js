@@ -79,7 +79,7 @@ server.use((req, res, next) => {
             const basketId = parseInt(url.match(/^\/baskets\/(\d+)/)[1], 10)
             const basket = router.db.get('baskets').find({ id: basketId }).value()
             if (!basket) return res.status(404).json({ error: 'Basket not found' })
-            if (basket.userId !== user.id) return res.status(403).json({ error: 'Not your basket' })
+            if (Number(basket.userId) !== Number(user.id)) return res.status(403).json({ error: 'Not your basket' })
             if (body.status !== 'submitted' || basket.status !== 'draft') {
                 return res.status(403).json({ error: 'Clients can only submit a draft basket' })
             }

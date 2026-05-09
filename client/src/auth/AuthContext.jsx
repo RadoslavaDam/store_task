@@ -10,8 +10,10 @@ function basicUserFromToken(token)
 {
     const decoded = decodeJwt(token)
     if (!decoded) return null
+    // sub is a string per RFC 7519; coerce to number to match db ids.
+    const rawId = decoded.sub !== undefined ? decoded.sub : decoded.id
     return {
-        id: decoded.sub || decoded.id,
+        id: rawId !== undefined && rawId !== null ? Number(rawId) : undefined,
         email: decoded.email,
         role: decoded.role || 'client'
     }
