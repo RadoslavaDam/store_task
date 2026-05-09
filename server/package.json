@@ -1,0 +1,17 @@
+{
+    "name": "store-task-server",
+    "version": "1.0.0",
+    "private": true,
+    "description": "REST API for the store course project. Backed by json-server and json-server-auth.",
+    "scripts": {
+        "seed": "node -e \"require('fs').copyFileSync('db.seed.json','db.json'); console.log('db.json created from db.seed.json')\"",
+        "start": "node server.js"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "dependencies": {
+        "json-server": "0.17.4",
+        "json-server-auth": "2.1.0"
+    }
+}

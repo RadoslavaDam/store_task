@@ -1,0 +1,38 @@
+{
+    "users": [],
+    "items": [
+        {
+            "id": 1,
+            "name": "A6 Notebook",
+            "description": "Hardcover ruled notebook, 80 pages",
+            "price": 3.50,
+            "stock": 50,
+            "imageUrl": "https://placehold.co/200x200?text=Notebook"
+        },
+        {
+            "id": 2,
+            "name": "Ballpoint Pen",
+            "description": "Blue ink, medium tip",
+            "price": 1.20,
+            "stock": 200,
+            "imageUrl": "https://placehold.co/200x200?text=Pen"
+        },
+        {
+            "id": 3,
+            "name": "Desk Lamp",
+            "description": "LED, three brightness levels, USB powered",
+            "price": 24.90,
+            "stock": 15,
+            "imageUrl": "https://placehold.co/200x200?text=Lamp"
+        },
+        {
+            "id": 4,
+            "name": "Coffee Mug",
+            "description": "Ceramic, 350 ml",
+            "price": 6.00,
+            "stock": 40,
+            "imageUrl": "https://placehold.co/200x200?text=Mug"
+        }
+    ],
+    "baskets": []
+}
