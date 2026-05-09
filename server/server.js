@@ -23,12 +23,33 @@ function decodeUser(req) {
     try { return jwt.decode(token) } catch (_) { return null }
 }
 
-// Role-based guards. Runs before json-server-auth so we can reject early.
+// Role-based guards. Runs before json-server-auth so we can reject early
+// or short-circuit reads that the default rules would otherwise block.
 server.use((req, res, next) => {
     const url = req.url
     const method = req.method
     const body = req.body
     const writeMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+
+    // Admin read of /baskets bypasses json-server-auth's owner-only 660 rule.
+    // Our power/master roles are not json-server-auth admins (different role
+    // naming on purpose), so we serve admin reads here directly from the db.
+    if (method === 'GET' && /^\/baskets(\/\d+)?(\?.*)?$/.test(url)) {
+        const user = decodeUser(req)
+        if (user && PRIV_ROLES.includes(user.role)) {
+            const query = req.query || {}
+            const idMatch = url.match(/^\/baskets\/(\d+)/)
+            if (idMatch) {
+                const found = router.db.get('baskets').find({ id: parseInt(idMatch[1], 10) }).value()
+                if (!found) return res.status(404).json({ error: 'Not found' })
+                return res.json(found)
+            }
+            let result = router.db.get('baskets').value()
+            if (query.status) result = result.filter(b => b.status === query.status)
+            if (query.userId !== undefined) result = result.filter(b => String(b.userId) === String(query.userId))
+            return res.json(result)
+        }
+    }
 
     if (url.startsWith('/items') && writeMethods.has(method)) {
         const user = decodeUser(req)
