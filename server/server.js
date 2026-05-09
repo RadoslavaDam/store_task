@@ -1,6 +1,9 @@
 const path = require('path')
 const jsonServer = require('json-server')
 const auth = require('json-server-auth')
+const jwt = require('jsonwebtoken')
+
+const PRIV_ROLES = ['power', 'master']
 
 const server = jsonServer.create()
 const router = jsonServer.router(path.join(__dirname, 'db.json'))
@@ -9,6 +12,63 @@ server.db = router.db
 
 server.use(jsonServer.defaults())
 server.use(jsonServer.bodyParser)
+
+// Decode the JWT payload without signature verification.
+// For a coursework demo this is sufficient. Production would share JWT_SECRET
+// with json-server-auth via env and use jwt.verify(token, secret) instead.
+function decodeUser(req) {
+    const header = req.headers.authorization || ''
+    const token = header.startsWith('Bearer ') ? header.slice(7) : null
+    if (!token) return null
+    try { return jwt.decode(token) } catch (_) { return null }
+}
+
+// Role-based guards. Runs before json-server-auth so we can reject early.
+server.use((req, res, next) => {
+    const url = req.url
+    const method = req.method
+    const body = req.body
+    const writeMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+
+    if (url.startsWith('/items') && writeMethods.has(method)) {
+        const user = decodeUser(req)
+        if (!user || !PRIV_ROLES.includes(user.role)) {
+            return res.status(403).json({ error: 'Admin role required' })
+        }
+    }
+
+    if (/^\/baskets\/\d+/.test(url) && method === 'PATCH' && body && body.status !== undefined) {
+        const user = decodeUser(req)
+        if (!user || !PRIV_ROLES.includes(user.role)) {
+            return res.status(403).json({ error: 'Admin role required to change basket status' })
+        }
+    }
+
+    if ((url === '/users' || url === '/signup' || url === '/register') && method === 'POST' && body) {
+        const requestedRole = body.role || 'client'
+        if (requestedRole === 'master') {
+            const masterExists = router.db.get('users').find({ role: 'master' }).value()
+            if (masterExists) {
+                return res.status(403).json({ error: 'Master already exists' })
+            }
+        } else if (requestedRole === 'power') {
+            const user = decodeUser(req)
+            if (!user || user.role !== 'master') {
+                return res.status(403).json({ error: 'Only master can create admin users' })
+            }
+        }
+    }
+
+    if (/^\/users\/\d+$/.test(url) && method === 'DELETE') {
+        const user = decodeUser(req)
+        if (!user || user.role !== 'master') {
+            return res.status(403).json({ error: 'Master role required' })
+        }
+    }
+
+    next()
+})
+
 server.use(auth.rewriter(require('./routes.json')))
 server.use(auth)
 server.use(router)
