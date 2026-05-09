@@ -7,6 +7,7 @@ import BasketPage from './pages/BasketPage'
 import ProfilePage from './pages/ProfilePage'
 import ItemsAdminPage from './pages/admin/ItemsAdminPage'
 import BasketsAdminPage from './pages/admin/BasketsAdminPage'
+import UsersAdminPage from './pages/admin/UsersAdminPage'
 import ProtectedRoute from './auth/ProtectedRoute'
 import { useAuth } from './auth/AuthContext'
 
@@ -45,7 +46,7 @@ export default function App()
 
                     <Route path="/admin/items" element={<ProtectedRoute roles={['power', 'master']}><ItemsAdminPage /></ProtectedRoute>} />
                     <Route path="/admin/baskets" element={<ProtectedRoute roles={['power', 'master']}><BasketsAdminPage /></ProtectedRoute>} />
-                    <Route path="/admin/users" element={<ProtectedRoute roles={['master']}><Placeholder title="Admin: Users" /></ProtectedRoute>} />
+                    <Route path="/admin/users" element={<ProtectedRoute roles={['master']}><UsersAdminPage /></ProtectedRoute>} />
 
                     <Route path="*" element={<Placeholder title="Not Found" />} />
                 </Routes>
