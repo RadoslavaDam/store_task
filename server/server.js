@@ -73,8 +73,16 @@ server.use((req, res, next) => {
 
     if (/^\/baskets\/\d+/.test(url) && method === 'PATCH' && body && body.status !== undefined) {
         const user = decodeUser(req)
-        if (!user || !PRIV_ROLES.includes(user.role)) {
-            return res.status(403).json({ error: 'Admin role required to change basket status' })
+        if (!user) return res.status(401).json({ error: 'Authentication required' })
+        if (!PRIV_ROLES.includes(user.role)) {
+            // Clients are allowed exactly one transition: their own draft -> submitted.
+            const basketId = parseInt(url.match(/^\/baskets\/(\d+)/)[1], 10)
+            const basket = router.db.get('baskets').find({ id: basketId }).value()
+            if (!basket) return res.status(404).json({ error: 'Basket not found' })
+            if (basket.userId !== user.id) return res.status(403).json({ error: 'Not your basket' })
+            if (body.status !== 'submitted' || basket.status !== 'draft') {
+                return res.status(403).json({ error: 'Clients can only submit a draft basket' })
+            }
         }
     }
 
