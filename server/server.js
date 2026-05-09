@@ -9,6 +9,7 @@ server.db = router.db
 
 server.use(jsonServer.defaults())
 server.use(jsonServer.bodyParser)
+server.use(auth.rewriter(require('./routes.json')))
 server.use(auth)
 server.use(router)
 
