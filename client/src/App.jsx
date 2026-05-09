@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 
 function Placeholder({ title })
 {
@@ -19,8 +21,8 @@ export default function App()
             <main>
                 <Routes>
                     <Route path="/" element={<Placeholder title="Home" />} />
-                    <Route path="/login" element={<Placeholder title="Login" />} />
-                    <Route path="/register" element={<Placeholder title="Register" />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
                     <Route path="/store" element={<Placeholder title="Store" />} />
                     <Route path="/basket" element={<Placeholder title="Basket" />} />
                     <Route path="/profile" element={<Placeholder title="Profile" />} />
